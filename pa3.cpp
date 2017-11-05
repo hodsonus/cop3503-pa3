@@ -3,23 +3,16 @@
 #include "pa3.h"
 
 //node constructor
-Node::Node(std::string data, Node* next, Node* prev) {
+Node::Node(std::string data, Node* next) {
 
   this->data = data;
   this->next = next;
-  this->prev = prev;
 }
 
 //returns the next node
 Node* Node::getNext() {
 
   return this->next;
-}
-
-//returns the previous null
-Node* Node::getPrev() {
-
-  return this->prev;
 }
 
 //returns this node's data
@@ -40,12 +33,6 @@ void Node::setNext(Node* next) {
   this->next = next;
 }
 
-//sets this node's previous node
-void Node::setPrev(Node* prev) {
-
-  this->prev = prev;
-}
-
 //removes data from the list
 bool LinkedList::remove(std::string toRemove) {
 
@@ -60,7 +47,6 @@ bool LinkedList::remove(std::string toRemove) {
     //if the head is equal to the element we want to remove
     if (temp->getData().compare(toRemove)==0) {
       head = head->getNext();
-      head->setPrev(NULL);
       delete temp;
       return true;
     }
@@ -78,22 +64,10 @@ bool LinkedList::remove(std::string toRemove) {
     /* if the previous if statement is not executed, then we know the next
     element is the one that we are searching for! delete it! */
 
-    //middle case
-    if (temp->getNext()->getNext() != NULL) {
-      Node * deleteMe = temp->getNext();
-      temp->getNext()->getNext()->setPrev(temp);
+      // temp->getNext()->getNext() != NULL
       temp->setNext(temp->getNext()->getNext());
-      delete deleteMe;
+      delete temp->getNext();
       return true;
-    }
-    //tail edge case
-    else {
-      Node * deleteMe = temp->getNext();
-      temp->setNext(temp->getNext()->getNext());
-      tail = temp;
-      delete deleteMe;
-      return true;
-    }
 }
 
 //data to insert
@@ -105,8 +79,7 @@ void LinkedList::insert(std::string toInsert) {
   //if the head is null, then the element is inserted as the head
   if (current == NULL) {
 
-    head = new Node(toInsert, NULL, NULL);
-    tail = head;
+    head = new Node(toInsert, NULL);
     return;
   }
 
@@ -116,13 +89,9 @@ void LinkedList::insert(std::string toInsert) {
     current = current->getNext();
   }
 
-  Node* temp = new Node(toInsert, NULL, current);
-
   /* set the next node in the linked list, which is null at this point, to
   the element we want to insert */
-  current->setNext(temp);
-
-  tail = temp;
+  current->setNext(new Node(toInsert, NULL));
 }
 
 //print the linked list, seperated by spaces
@@ -155,7 +124,7 @@ void LinkedList::traverse() {
   }
 
   //print additional line
-  std::cout << std::endl;
+  if (count != 0) std::cout << std::endl;
 }
 
 //search the linked list and return the node's memory address
@@ -191,22 +160,10 @@ Node* LinkedList::getHead() {
   return this->head;
 }
 
-//return the head of the linked list
-Node* LinkedList::getTail() {
-
-  return this->tail;
-}
-
 //set the head to the passed in head
 void LinkedList::setHead(Node* head) {
 
   this->head = head;
-}
-
-//set the tail to the passed in node
-void LinkedList::setTail(Node* tail) {
-
-  this->tail = tail;
 }
 
 //stack constructor
@@ -221,32 +178,34 @@ void Stack::push(std::string data) {
   list->insert(data);
 }
 
-//pull from the stack
+//pop from the stack
 std::string Stack::pop() {
 
-  //if the tail is null
-  if (list->getTail() == NULL) {
-
-    return NULL;
+  if (list->getHead() == NULL) {
+    return "";
   }
 
-  //if the node preceding the tail is null
-  else if (list->getTail()->getPrev() == NULL) {
+  Node* current = list->getHead();
 
-    Node* temp = list->getTail();
-    list->setTail(NULL);
+  if (current->getNext() == NULL) {
+
+    std::string toReturn = current->getData();
     list->setHead(NULL);
-    return temp->getData();
-  }
-
-  //else not an edge case
-  else {
-
-    std::string toReturn = list->getTail()->getData();
-    list->setTail(list->getTail()->getPrev());
-    list->getTail()->setNext(NULL);
+    delete current;
     return toReturn;
   }
+
+  //breaks when the node after the next is null
+  while (current->getNext()->getNext() != NULL) {
+    current = current->getNext();
+  }
+
+  std::string toReturn = current->getNext()->getData();
+
+  delete current->getNext();
+  current->setNext(NULL);
+
+  return toReturn;
 }
 
 //prints stack
@@ -266,6 +225,14 @@ int main() {
   myStack->push("donut");
 
   myStack->printStack();
+
+  myStack->pop();
+
+  myStack->pop();
+
+  myStack->printStack();
+
+  myStack->pop();
 
   myStack->pop();
 

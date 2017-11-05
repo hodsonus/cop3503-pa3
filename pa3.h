@@ -9,23 +9,19 @@ class Node {
   private:
     std::string data;
     Node* next;
-    Node* prev;
 
   public:
-    Node(std::string data, Node* next, Node* prev);
+    Node(std::string data, Node* next);
     Node* getNext();
-    Node* getPrev();
     std::string getData();
     void setData(std::string toSet);
     void setNext(Node* next);
-    void setPrev(Node* prev);
 };
 
 class LinkedList {
 
   private:
     Node* head;
-    Node* tail;
 
   public:
     bool remove(std::string toRemove);
@@ -33,9 +29,7 @@ class LinkedList {
     void traverse();
     Node* search(std::string toFind);
     Node* getHead();
-    Node* getTail();
     void setHead(Node* head);
-    void setTail(Node* tail);
 };
 
 class Stack {
