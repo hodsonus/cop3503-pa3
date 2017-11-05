@@ -7,15 +7,18 @@
 class Node {
 
   private:
-    string data;
+    std::string data;
     Node* next;
+    Node* prev;
 
   public:
-    Node(string data, Node* next);
+    Node(std::string data, Node* next, Node* prev);
     Node* getNext();
-    string getData();
-    void setData(string toSet);
+    Node* getPrev();
+    std::string getData();
+    void setData(std::string toSet);
     void setNext(Node* next);
+    void setPrev(Node* prev);
 };
 
 class LinkedList {
@@ -25,11 +28,12 @@ class LinkedList {
     Node* tail;
 
   public:
-    bool remove(string toRemove);
-    void insert(string toInsert);
+    bool remove(std::string toRemove);
+    void insert(std::string toInsert);
     void traverse();
-    Node* search(string toFind);
+    Node* search(std::string toFind);
     Node* getHead();
+    Node* getTail();
 };
 
 class Stack {
@@ -38,8 +42,8 @@ class Stack {
     LinkedList* list;
 
   public:
-    push();
-    pop();
+    void push(std::string data);
+    std::string pop();
 };
 
 class pa3 {
@@ -48,6 +52,7 @@ class pa3 {
     Stack myStack;
 
   public:
+
 
 };
 
