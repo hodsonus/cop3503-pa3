@@ -197,20 +197,79 @@ Node* LinkedList::getTail() {
   return this->tail;
 }
 
-//TODO
-void Stack::push(std::string data) {
+//set the head to the passed in head
+void LinkedList::setHead(Node* head) {
 
-
+  this->head = head;
 }
 
-//TODO
+//set the tail to the passed in node
+void LinkedList::setTail(Node* tail) {
+
+  this->tail = tail;
+}
+
+//stack constructor
+Stack::Stack() {
+
+  list = new LinkedList();
+}
+
+//push from the stack
+void Stack::push(std::string data) {
+
+  list->insert(data);
+}
+
+//pull from the stack
 std::string Stack::pop() {
 
-  return NULL;
+  //if the tail is null
+  if (list->getTail() == NULL) {
+
+    return NULL;
+  }
+
+  //if the node preceding the tail is null
+  else if (list->getTail()->getPrev() == NULL) {
+
+    Node* temp = list->getTail();
+    list->setTail(NULL);
+    list->setHead(NULL);
+    return temp->getData();
+  }
+
+  //else not an edge case
+  else {
+
+    std::string toReturn = list->getTail()->getData();
+    list->setTail(list->getTail()->getPrev());
+    list->getTail()->setNext(NULL);
+    return toReturn;
+  }
+}
+
+//prints stack
+void Stack::printStack() {
+
+  list->traverse();
 }
 
 int main() {
 
+  Stack* myStack = new Stack();
+
+  myStack->push("hi");
+
+  myStack->push("hello");
+
+  myStack->push("donut");
+
+  myStack->printStack();
+
+  myStack->pop();
+
+  myStack->printStack();
 
   return 0;
 }

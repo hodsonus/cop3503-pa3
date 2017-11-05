@@ -34,6 +34,8 @@ class LinkedList {
     Node* search(std::string toFind);
     Node* getHead();
     Node* getTail();
+    void setHead(Node* head);
+    void setTail(Node* tail);
 };
 
 class Stack {
@@ -42,8 +44,10 @@ class Stack {
     LinkedList* list;
 
   public:
+    Stack();
     void push(std::string data);
     std::string pop();
+    void printStack();
 };
 
 class pa3 {
