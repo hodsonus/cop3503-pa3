@@ -46,7 +46,7 @@ void Node::setPrev(Node* prev) {
   this->prev = prev;
 }
 
-//TODO removes data from the list
+//removes data from the list
 bool LinkedList::remove(std::string toRemove) {
 
     //if the head is null then there are no nodes and thus no string to remove
@@ -59,7 +59,9 @@ bool LinkedList::remove(std::string toRemove) {
 
     //if the head is equal to the element we want to remove
     if (temp->getData().compare(toRemove)==0) {
-      temp->setData("Free");
+      head = head->getNext();
+      head->setPrev(NULL);
+      delete temp;
       return true;
     }
 
@@ -74,12 +76,27 @@ bool LinkedList::remove(std::string toRemove) {
     if (temp->getNext() == NULL) return false;
 
     /* if the previous if statement is not executed, then we know the next
-    element is the one that we are searching for! set it to free to delete it */
-    temp->getNext()->setData("Free");
-    return true;
+    element is the one that we are searching for! delete it! */
+
+    //middle case
+    if (temp->getNext()->getNext() != NULL) {
+      Node * deleteMe = temp->getNext();
+      temp->getNext()->getNext()->setPrev(temp);
+      temp->setNext(temp->getNext()->getNext());
+      delete deleteMe;
+      return true;
+    }
+    //tail edge case
+    else {
+      Node * deleteMe = temp->getNext();
+      temp->setNext(temp->getNext()->getNext());
+      tail = temp;
+      delete deleteMe;
+      return true;
+    }
 }
 
-//TODO data to insert
+//data to insert
 void LinkedList::insert(std::string toInsert) {
 
   //start at the head
