@@ -42,16 +42,7 @@ class Stack {
     void push(std::string data);
     std::string pop();
     void printStack();
-};
-
-class pa3 {
-
-  private:
-    Stack myStack;
-
-  public:
-
-
+    bool contains(std::string data);
 };
 
 #endif

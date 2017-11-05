@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "pa3.h"
 
 //node constructor
@@ -123,7 +124,7 @@ void LinkedList::traverse() {
     temp = temp->getNext();
   }
 
-  //print additional line
+  //print additional line if we printed something
   if (count != 0) std::cout << std::endl;
 }
 
@@ -214,29 +215,100 @@ void Stack::printStack() {
   list->traverse();
 }
 
+//checks to see if the stack contains the data that is passed in
+bool Stack::contains(std::string data) {
+
+  Node* current = list->getHead();
+
+  while (true) {
+
+    if (current == NULL) return false;
+    if (current->getData() == data) return true;
+    current = current->getNext();
+  }
+}
+
 int main() {
 
-  Stack* myStack = new Stack();
+  //gets valid file instance
+  std::cout << "Please enter the name of the input file:" << std::endl;
+  std::string fileName;
+  std::cin >>  fileName;
+  std::ifstream myFile;
+  myFile.open(fileName);
+  //myFile is false when the file did not open
+  if (!myFile) {
+        std::cout << "Error when opening file. Please try again." << std::endl;
+        exit(1); // terminate with error
+    }
 
-  myStack->push("hi");
+  //declare the stacks
+  Stack keywords, identifiers, constants, operators, delimiters, errors;
 
-  myStack->push("hello");
+  //declare counting variables
+  int amtFOR = 0, amtBEGIN = 0, amtEND = 0;
 
-  myStack->push("donut");
+  //loop through each word in the file, delimited by spaces and line breaks
+  std::string word;
+  while (myFile >> word) {
 
-  myStack->printStack();
+    // std::cout << word << std::endl;
 
-  myStack->pop();
+    //check the word to see if it is a keyword
+    if (word == "FOR" || word == "BEGIN" || word == "END") {
 
-  myStack->pop();
+      if (!keywords.contains(word)) keywords.push(word);
 
-  myStack->printStack();
+      if (word == "FOR") amtFOR++;
+      else if (word == "BEGIN") amtBEGIN++;
+      else amtEND++;
+    }
 
-  myStack->pop();
+    //checks the word to see the delimiters that it contains
+    for (int i = 0; i < word.length(); i++) {
 
-  myStack->pop();
+      if (!delimiters.contains(";") && word.at(i) == ';') {
 
-  myStack->printStack();
+        delimiters.push(";");
+      }
+      else if (!delimiters.contains(",") && word.at(i) == ',') {
 
+        delimiters.push(",");
+      }
+    }
+
+    //checks the word to see the operators that it contains
+    for () {
+
+
+    }
+
+    //checks the word to see the constants that it contains
+
+
+    //checks the word to see the identifiers that it contains
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+delimiters.printStack();
+// keywords.printStack();
+// std::cout << "amtFOR: " << amtFOR << std::endl;
+// std::cout << "amtBEGIN: " << amtBEGIN << std::endl;
+// std::cout << "amtEND: " << amtEND << std::endl;
+
+  //clean up and close
+  myFile.close();
   return 0;
 }
