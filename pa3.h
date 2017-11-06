@@ -43,6 +43,7 @@ class Stack {
     std::string pop();
     void printStack();
     bool contains(std::string data);
+    LinkedList* getList();
 };
 
 #endif

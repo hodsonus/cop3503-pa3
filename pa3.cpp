@@ -125,7 +125,7 @@ void LinkedList::traverse() {
   }
 
   //print additional line if we printed something
-  if (count != 0) std::cout << std::endl;
+  std::cout << std::endl;
 }
 
 //search the linked list and return the node's memory address
@@ -228,6 +228,11 @@ bool Stack::contains(std::string data) {
   }
 }
 
+//returns the stack's linked list
+LinkedList* Stack::getList() {
+  return this->list;
+}
+
 int main() {
 
   //gets valid file instance
@@ -247,9 +252,12 @@ int main() {
 
   //declare counting variables
   int amtFOR = 0, amtBEGIN = 0, amtEND = 0;
+  int loopDepth = 0;
+
+  //declare temp string for use in analysis loop
+  std::string word;
 
   //loop through each word in the file, delimited by spaces and line breaks
-  std::string word;
   while (myFile >> word) {
 
     // std::cout << word << std::endl;
@@ -264,10 +272,16 @@ int main() {
       else amtEND++;
     }
 
-    //checks the word to see the delimiters that it contains
+    //checks the word to see the delimiters and the operators that it contains
     for (int i = 0; i < word.length(); i++) {
 
-      if (!delimiters.contains(";") && word.at(i) == ';') {
+      if (!operators.contains("++") && word.find("++)") > 0) {
+
+        operators.push("++");
+        break;
+      }
+
+      else if (!delimiters.contains(";") && word.at(i) == ';') {
 
         delimiters.push(";");
       }
@@ -275,38 +289,94 @@ int main() {
 
         delimiters.push(",");
       }
+      else if (!operators.contains("+") && word.at(i) == '+') {
+
+        operators.push("+");
+      }
+      else if (!operators.contains("-") && word.at(i) == '-') {
+
+        operators.push("-");
+      }
+      else if (!operators.contains("*") && word.at(i) == '*') {
+
+        operators.push("*");
+      }
+      else if (!operators.contains("/") && word.at(i) == '/') {
+
+        operators.push("/");
+      }
+      else if (!operators.contains("=") && word.at(i) == '=') {
+
+        operators.push("=");
+      }
     }
 
-    //checks the word to see the operators that it contains
-    for () {
+    //checks the word to see the identifiers that it contains
+    {
 
+      //location of the equals sign in the word, -1 if not present
+      int indexEquals = word.find("=");
 
+      //single variable case
+      if (word.length() == 1 && word.at(0)>='a' && word.at(0)<='z' && !identifiers.contains(word)) {
+
+        identifiers.push(word);
+      }
+
+      //equals sign case
+      else if (indexEquals >=1 && !identifiers.contains(word.substr(0,indexEquals))) {
+
+        identifiers.push(word.substr(0,indexEquals));
+      }
+
+      //parentheses and comma case
+      else if (word.at(0) == '(' && word.length()>=2 && !identifiers.contains(word.substr(1, word.length()-2))) {
+
+        identifiers.push(word.substr(1, word.length()-2));
+      }
+
+      //semi colon case
+      else if (word.length()>=2 && word.at(word.length()-1) == ';' && !identifiers.contains(word.substr(0,word.length()-1))) {
+
+        identifiers.push(word.substr(0,word.length()-1));
+      }
     }
 
     //checks the word to see the constants that it contains
+    {
 
+      
+    }
 
-    //checks the word to see the identifiers that it contains
-
+    //handles the syntax errors
 
 
 
   }
 
+  //calculate loopdepth
 
+  //print out the results of the lexical analysis
+  std::cout << "The depth of nested loop(s) is " << loopDepth << "\n" << std::endl;
 
+  std::cout << "Keywords: ";
+  keywords.printStack();
 
+  std::cout << "Identifiers: ";
+  identifiers.printStack();
 
+  std::cout << "Constants: ";
+  constants.printStack();
 
+  std::cout << "Operators: ";
+  operators.printStack();
 
+  std::cout << "Delimiters: ";
+  delimiters.printStack();
 
-
-
-delimiters.printStack();
-// keywords.printStack();
-// std::cout << "amtFOR: " << amtFOR << std::endl;
-// std::cout << "amtBEGIN: " << amtBEGIN << std::endl;
-// std::cout << "amtEND: " << amtEND << std::endl;
+  std::cout << std::endl << "Syntax Error(s): ";
+  if (errors.getList()->getHead() == NULL) std::cout << "NA" << std::endl;
+  else errors.printStack();
 
   //clean up and close
   myFile.close();
