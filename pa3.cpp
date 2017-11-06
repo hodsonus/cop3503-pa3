@@ -263,8 +263,6 @@ int main() {
   //loop through each word in the file, delimited by spaces and line breaks
   while (myFile >> word) {
 
-    // std::cout << word << std::endl;
-
     syntaxError = true;
 
     //check the word to see if it is a keyword
@@ -278,18 +276,40 @@ int main() {
       else amtEND++;
     }
 
-    //checks the word to see the delimiters and the operators that it contains
-    for (int i = 0; i < word.length(); i++) {
+    //checks the word to see the operators (equals signs are investigated in delimiters loop) that it contains
+    {
 
-      if (word =="++)") {
+      if (word == "++)") {
+
         syntaxError = false;
-        if (!operators.contains("++")) {
-          operators.push("++");
-          break;
-        }
+        if (!operators.contains("++")) operators.push("++");
       }
+      else if (word.length() == 1 && word == "+") {
 
-      else if (word.at(i) == ';') {
+        syntaxError = false;
+        if (!operators.contains("+")) operators.push("+");
+      }
+      else if (word == "-") {
+
+        syntaxError = false;
+        if (!operators.contains("-")) operators.push("-");
+      }
+      else if (word == "*") {
+
+        syntaxError = false;
+        if (!operators.contains("*")) operators.push("*");
+      }
+      else if (word == "/") {
+
+        syntaxError = false;
+        if (!operators.contains("/")) operators.push("/");
+      }
+    }
+
+    //checks the word to see the delimiters (and equals signs!) that it contains
+    for (int i = 0; i < word.length(); i++){
+
+      if (word.at(i) == ';') {
 
         syntaxError = false;
         if (!delimiters.contains(";")) delimiters.push(";");
@@ -298,26 +318,6 @@ int main() {
 
         syntaxError = false;
         if (!delimiters.contains(",")) delimiters.push(",");
-      }
-      else if (word.at(i) == '+') {
-
-        syntaxError = false;
-        if (!operators.contains("+")) operators.push("+");
-      }
-      else if (word.at(i) == '-') {
-
-        syntaxError = false;
-        if (!operators.contains("-")) operators.push("-");
-      }
-      else if (word.at(i) == '*') {
-
-        syntaxError = false;
-        if (!operators.contains("*")) operators.push("*");
-      }
-      else if (word.at(i) == '/') {
-
-        syntaxError = false;
-        if (!operators.contains("/")) operators.push("/");
       }
       else if (word.at(i) == '=') {
 
@@ -373,11 +373,13 @@ int main() {
 
     //handles the syntax errors
     {
-      if (syntaxError) errors.push(word);
 
+      if (syntaxError) errors.push(word);
     }
   }
 
+  /* these two loops check to see if there are more of "BEGIN" or "END" and if
+  so, adds the missing words to the errors stack */
   for (int i = 0; i < amtBEGIN - amtEND; i++) {
 
     errors.push("END");
@@ -391,26 +393,29 @@ int main() {
   loopDepth = std::max(std::max(amtFOR, amtEND), amtBEGIN) - 1;
 
   //print out the results of the lexical analysis
-  std::cout << "The depth of nested loop(s) is " << loopDepth << "\n" << std::endl;
+  {
 
-  std::cout << "Keywords: ";
-  keywords.printStack();
+    std::cout << "The depth of nested loop(s) is " << loopDepth << "\n" << std::endl;
 
-  std::cout << "Identifiers: ";
-  identifiers.printStack();
+    std::cout << "Keywords: ";
+    keywords.printStack();
 
-  std::cout << "Constants: ";
-  constants.printStack();
+    std::cout << "Identifiers: ";
+    identifiers.printStack();
 
-  std::cout << "Operators: ";
-  operators.printStack();
+    std::cout << "Constants: ";
+    constants.printStack();
 
-  std::cout << "Delimiters: ";
-  delimiters.printStack();
+    std::cout << "Operators: ";
+    operators.printStack();
 
-  std::cout << std::endl << "Syntax Error(s): ";
-  if (errors.getList()->getHead() == NULL) std::cout << "NA" << std::endl;
-  else errors.printStack();
+    std::cout << "Delimiters: ";
+    delimiters.printStack();
+
+    std::cout << std::endl << "Syntax Error(s): ";
+    if (errors.getList()->getHead() == NULL) std::cout << "NA" << std::endl; //if errors stack is null print "NA"
+    else errors.printStack(); //else print the errors stack
+  }
 
   //clean up and close
   myFile.close();
