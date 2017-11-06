@@ -257,14 +257,20 @@ int main() {
   //declare temp string for use in analysis loop
   std::string word;
 
+  //declare bool syntax error for syntax error control
+  bool syntaxError;
+
   //loop through each word in the file, delimited by spaces and line breaks
   while (myFile >> word) {
 
     // std::cout << word << std::endl;
 
+    syntaxError = true;
+
     //check the word to see if it is a keyword
     if (word == "FOR" || word == "BEGIN" || word == "END") {
 
+      syntaxError = false;
       if (!keywords.contains(word)) keywords.push(word);
 
       if (word == "FOR") amtFOR++;
@@ -275,39 +281,48 @@ int main() {
     //checks the word to see the delimiters and the operators that it contains
     for (int i = 0; i < word.length(); i++) {
 
-      if (!operators.contains("++") && word.find("++)") > 0) {
-
-        operators.push("++");
-        break;
+      if (word =="++)") {
+        syntaxError = false;
+        if (!operators.contains("++")) {
+          operators.push("++");
+          break;
+        }
       }
 
-      else if (!delimiters.contains(";") && word.at(i) == ';') {
+      else if (word.at(i) == ';') {
 
-        delimiters.push(";");
+        syntaxError = false;
+        if (!delimiters.contains(";")) delimiters.push(";");
       }
-      else if (!delimiters.contains(",") && word.at(i) == ',') {
+      else if (word.at(i) == ',') {
 
-        delimiters.push(",");
+        syntaxError = false;
+        if (!delimiters.contains(",")) delimiters.push(",");
       }
-      else if (!operators.contains("+") && word.at(i) == '+') {
+      else if (word.at(i) == '+') {
 
-        operators.push("+");
+        syntaxError = false;
+        if (!operators.contains("+")) operators.push("+");
       }
-      else if (!operators.contains("-") && word.at(i) == '-') {
+      else if (word.at(i) == '-') {
 
-        operators.push("-");
+        syntaxError = false;
+        if (!operators.contains("-")) operators.push("-");
       }
-      else if (!operators.contains("*") && word.at(i) == '*') {
+      else if (word.at(i) == '*') {
 
-        operators.push("*");
+        syntaxError = false;
+        if (!operators.contains("*")) operators.push("*");
       }
-      else if (!operators.contains("/") && word.at(i) == '/') {
+      else if (word.at(i) == '/') {
 
-        operators.push("/");
+        syntaxError = false;
+        if (!operators.contains("/")) operators.push("/");
       }
-      else if (!operators.contains("=") && word.at(i) == '=') {
+      else if (word.at(i) == '=') {
 
-        operators.push("=");
+        syntaxError = false;
+        if (!operators.contains("=")) operators.push("=");
       }
     }
 
@@ -318,43 +333,62 @@ int main() {
       int indexEquals = word.find("=");
 
       //single variable case
-      if (word.length() == 1 && word.at(0)>='a' && word.at(0)<='z' && !identifiers.contains(word)) {
+      if (word.length() == 1 && word.at(0)>='a' && word.at(0)<='z') {
 
-        identifiers.push(word);
+        syntaxError = false;
+        if (!identifiers.contains(word)) identifiers.push(word);
       }
 
       //equals sign case
-      else if (indexEquals >=1 && !identifiers.contains(word.substr(0,indexEquals))) {
+      else if (indexEquals >=1) {
 
-        identifiers.push(word.substr(0,indexEquals));
+        syntaxError = false;
+        if (!identifiers.contains(word.substr(0,indexEquals))) identifiers.push(word.substr(0,indexEquals));
       }
 
       //parentheses and comma case
-      else if (word.at(0) == '(' && word.length()>=2 && !identifiers.contains(word.substr(1, word.length()-2))) {
+      else if (word.at(0) == '(' && word.length()>=2) {
 
-        identifiers.push(word.substr(1, word.length()-2));
+        syntaxError = false;
+        if (!identifiers.contains(word.substr(1, word.length()-2))) identifiers.push(word.substr(1, word.length()-2));
       }
 
       //semi colon case
-      else if (word.length()>=2 && word.at(word.length()-1) == ';' && !identifiers.contains(word.substr(0,word.length()-1))) {
+      else if (word.length()>=2 && word.at(word.length()-1) == ';') {
 
-        identifiers.push(word.substr(0,word.length()-1));
+        syntaxError = false;
+        if (!identifiers.contains(word.substr(0,word.length()-1))) identifiers.push(word.substr(0,word.length()-1));
       }
     }
 
-    //checks the word to see the constants that it contains
+    // checks the word to see the constants that it contains
     {
+      //single variable case
+      if (word.length() >= 1 && word.at(0)>='0' && word.at(0)<='9') {
 
-      
+        syntaxError = false;
+        if (!constants.contains(word.substr(0,word.length()-1))) constants.push(word.substr(0,word.length()-1));
+      }
     }
 
     //handles the syntax errors
+    {
+      if (syntaxError) errors.push(word);
 
+    }
+  }
 
+  for (int i = 0; i < amtBEGIN - amtEND; i++) {
 
+    errors.push("END");
+  }
+  for (int i = 0; i < amtEND - amtBEGIN; i++) {
+
+    errors.push("BEGIN");
   }
 
   //calculate loopdepth
+  loopDepth = std::max(std::max(amtFOR, amtEND), amtBEGIN) - 1;
 
   //print out the results of the lexical analysis
   std::cout << "The depth of nested loop(s) is " << loopDepth << "\n" << std::endl;
