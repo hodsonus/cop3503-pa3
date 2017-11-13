@@ -374,7 +374,11 @@ int main() {
     //handles the syntax errors
     {
 
-      if (syntaxError) errors.push(word);
+      if (syntaxError) {
+        if (word != "++))")
+          errors.push(word);
+        else errors.push(")");
+      }
     }
   }
 
