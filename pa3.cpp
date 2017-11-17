@@ -248,7 +248,7 @@ int main() {
     }
 
   //declare the stacks
-  Stack keywords, identifiers, constants, operators, delimiters, errors;
+  Stack keywords, identifiers, constants, operators, delimiters, errors, allWords;
 
   //declare counting variables
   int amtFOR = 0, amtBEGIN = 0, amtEND = 0;
@@ -263,6 +263,7 @@ int main() {
   //loop through each word in the file, delimited by spaces and line breaks
   while (myFile >> word) {
 
+    allWords.push(word);
     syntaxError = true;
 
     //check the word to see if it is a keyword
@@ -380,18 +381,14 @@ int main() {
         else errors.push(")");
       }
     }
+
+
   }
 
-  /* these two loops check to see if there are more of "BEGIN" or "END" and if
-  so, adds the missing words to the errors stack */
-  for (int i = 0; i < amtBEGIN - amtEND; i++) {
-
-    errors.push("END");
-  }
-  for (int i = 0; i < amtEND - amtBEGIN; i++) {
-
-    errors.push("BEGIN");
-  }
+  /* these  check to see if there are not enough instances of either END or BEGIN, both these words
+  should be equal to the amount of for loops */
+  if (amtFOR > amtEND) errors.push("END");
+  if (amtFOR > amtBEGIN) errors.push("BEGIN");
 
   //calculate loopdepth
   loopDepth = std::max(std::max(amtFOR, amtEND), amtBEGIN) - 1;
